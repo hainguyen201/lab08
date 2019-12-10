@@ -1,6 +1,10 @@
 package controller;
 
+import entity.Category;
+import entity.Product;
 import java.io.IOException;
+import java.util.List;
+import javax.ejb.EJB;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -8,37 +12,53 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import session_bean.CategorySessionBean;
+import session_bean.ProductSessionBean;
 
-import bll.ProductBLL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.NamingException;
-
-@WebServlet(name = "ControllerServlet",  loadOnStartup = 1,  urlPatterns = { "/ControllerServlet" })
+@WebServlet(name = "ControllerServlet", loadOnStartup = 1, urlPatterns = {"/ControllerServlet", "/category"})
 public class ControllerServlet extends HttpServlet {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	@Override
-	public void init(ServletConfig servletConfig) throws ServletException {
-		// TODO Auto-generated method stub
-		super.init(servletConfig);
-		ProductBLL productBLL=new ProductBLL();
-            try {
+    private static final long serialVersionUID = 1L;
+    @EJB
+    private ProductSessionBean productSessionBean;
+    @EJB
+    private CategorySessionBean categorySB;
 
-                getServletContext().setAttribute("newProducts", productBLL.getNewProducts(5));
-            } catch (NamingException ex) {
-                Logger.getLogger(ControllerServlet.class.getName()).log(Level.SEVERE, null, ex);
+    @Override
+    public void init(ServletConfig servletConfig) throws ServletException {
+		// TODO Auto-generated method stub
+        super.init(servletConfig);
+        // store new product list in servlet context
+        getServletContext().setAttribute("newProducts", productSessionBean.findRange(new int[]{0, 5}));
+        getServletContext().setAttribute("categories", categorySB.findRange(new int[]{0, 5}));
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String userPath=request.getServletPath();
+        if (userPath.equals("/category")) {
+            String categoryId = request.getQueryString();
+            if (categoryId != null){
+                Category selectedCategory;
+                List<Product> categoryProducts;
+                selectedCategory = categorySB.find(Integer.parseInt(categoryId));
+                request.getSession().setAttribute("selectedCategory", selectedCategory);
+                categoryProducts = (List<Product>) selectedCategory.getProductCollection();
+                request.getSession().setAttribute("categoryProducts", categoryProducts);
             }
-	}
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-	}
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
-	}
+        }
+        String url = userPath + ".jsp";
+        try{
+            request.getRequestDispatcher(url).forward(request, response);
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+
+    }
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+    }
 
 }
