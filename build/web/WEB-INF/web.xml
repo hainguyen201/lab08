@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-   
+    <listener>
+        <description>ServletContextListener</description>
+        <listener-class>listener.ControllerServletListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>ControllerServlet</servlet-name>
         <servlet-class>controller.ControllerServlet</servlet-class>
     </servlet>
-    
+    <servlet>
+        <servlet-name>ControllerListener</servlet-name>
+        <servlet-class>listener.ControllerListener</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ControllerServlet</servlet-name>
         <url-pattern>/ControllerServlet</url-pattern>
@@ -26,14 +32,15 @@
             <include-coda>/WEB-INF/jspf/footer.jspf</include-coda>
         </jsp-property-group>
     </jsp-config>
-    
     <context-param>
         <param-name>imgProductPath</param-name>
         <param-value>img/demo/</param-value>
     </context-param>
+    <servlet-mapping>
+        <servlet-name>ControllerListener</servlet-name>
+        <url-pattern>/ControllerListener</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-
-
 </web-app>

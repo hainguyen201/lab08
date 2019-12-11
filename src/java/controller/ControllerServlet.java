@@ -16,23 +16,13 @@ import javax.servlet.http.HttpSession;
 import session_bean.CategorySessionBean;
 import session_bean.ProductSessionBean;
 
-@WebServlet(name = "ControllerServlet", loadOnStartup = 1, urlPatterns = {"/ControllerServlet", "/category"})
+@WebServlet(name = "ControllerServlet",  urlPatterns = {"/ControllerServlet", "/category"})
 public class ControllerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     @EJB
     private ProductSessionBean productSessionBean;
     @EJB
     private CategorySessionBean categorySB;
-
-    @Override
-    public void init(ServletConfig servletConfig) throws ServletException {
-		// TODO Auto-generated method stub
-        super.init(servletConfig);
-        // store new product list in servlet context
-        getServletContext().setAttribute("newProducts", productSessionBean.findRange(new int[]{0, 5}));
-        getServletContext().setAttribute("categories", categorySB.findRange(new int[]{0, 5}));
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userPath=request.getServletPath();
